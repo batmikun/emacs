@@ -1,0 +1,377 @@
+cru#+TITLE:Batmi GNU Emacs Config
+#+AUTHOR: Nicolas Stirnemann (Batmi)
+#+DESCRIPTION: Batmi's personal Emacs config
+#+STARTUP: showeverything
+#+OPTIONS: toc:2
+
+* TABLE OF CONTENTS :toc:
+- [[#emacs][EMACS]]
+  - [[#changing-inner-emacs-default][Changing inner emacs default]]
+  - [[#change-built-in-packages][Change Built-In Packages]]
+- [[#graphical-user-interface-tweaks][GRAPHICAL USER INTERFACE TWEAKS]]
+  - [[#change-font][Change Font]]
+  - [[#display-line-number-and-truncated-lines][Display line number and truncated lines]]
+- [[#important-programs-to-load-first][IMPORTANT PROGRAMS TO LOAD FIRST]]
+  - [[#adding-the-scripts-directory-to-path][Adding the scripts directory to path]]
+  - [[#sourcing-the-scripts][Sourcing the Scripts]]
+- [[#fix-path][FIX PATH]]
+- [[#projects][PROJECTS]]
+  - [[#projectile][Projectile]]
+- [[#ui][UI]]
+  - [[#dashboard][Dashboard]]
+  - [[#modeline][Modeline]]
+  - [[#all-the-icons][All the icons]]
+  - [[#theme][Theme]]
+  - [[#transparency][Transparency]]
+- [[#orgmode][ORGMODE]]
+  - [[#enabling-table-of-contents][Enabling Table of Contents]]
+  - [[#disabling-electric-indent][Disabling electric indent]]
+  - [[#source-code-block-tag-expansion][Source code block tag expansion]]
+- [[#keybinding][KEYBINDING]]
+  - [[#general-keybinding][General Keybinding]]
+  - [[#which-key][Which Key]]
+- [[#programming][PROGRAMMING]]
+  - [[#eglot][Eglot]]
+  - [[#completition][Completition]]
+  - [[#treesiteer][Treesiteer]]
+- [[#shells-and-terminals][SHELLS AND TERMINALS]]
+  - [[#eshell][Eshell]]
+- [[#git][GIT]]
+  - [[#magit][Magit]]
+
+* EMACS
+
+** Changing inner emacs default
+#+begin_src emacs-lisp
+
+  ;; INTERNAL PACKAGES
+  (use-package emacs
+    :init
+    :hook ((before-save . delete-trailing-whitespace)
+           (text-mode   . visual-line-mode))
+    :mode (("\\.tsx?$"  . typescript-ts-mode)
+           ("\\.ya?ml$" . yaml-ts-mode)))
+
+#+end_src
+
+** Change Built-In Packages
+#+begin_src emacs-lisp
+
+  (use-package paren
+    :ensure nil
+    :init
+    (setq show-paren-delay 0)
+    :config
+    (show-paren-mode +1))
+
+#+end_src
+
+* GRAPHICAL USER INTERFACE TWEAKS
+
+** Change Font
+#+begin_src emacs-lisp
+
+  (set-face-attribute 'default nil
+    :font "JetBrainsMono Nerd Font"
+    :height 110
+    :weight 'medium)
+  (set-face-attribute 'variable-pitch nil
+    :font "Arial"
+    :height 120
+    :weight 'medium)
+  (set-face-attribute 'fixed-pitch nil
+    :font "JetBrainsMono Nerd Font"
+    :height 110
+    :weight 'medium)
+
+  ;; Makes commented text and keywords italics
+  (set-face-attribute 'font-lock-comment-face nil
+    :slant 'italic)
+  (set-face-attribute 'font-lock-keyword-face nil
+    :slant 'italic)
+
+  ;; Default font on al graphical frames created after restarting Emacs
+  (add-to-list 'default-frame-alist '(font . "JetBrainsMono Nerd Font"))
+
+  (setq-default line-spacing 0.12)
+
+#+end_src
+
+** Display line number and truncated lines
+#+begin_src emacs-lisp
+
+    (global-display-line-numbers-mode 1)
+    (global-visual-line-mode t)
+
+#+end_src
+
+* IMPORTANT PROGRAMS TO LOAD FIRST
+
+** Adding the scripts directory to path
+#+begin_src emacs-lisp
+
+  (add-to-list 'load-path "~/.emacs.d/scripts/")
+
+#+end_src
+
+** Sourcing the Scripts
+#+begin_src emacs-lisp
+
+  (require 'elpaca)
+
+#+end_src
+
+* FIX PATH
+#+begin_src emacs-lisp
+
+  (use-package exec-path-from-shell
+    :ensure t
+    :config
+    (when (memq window-system '(mac ns x))
+      (exec-path-from-shell-initialize)))
+
+#+end_src
+
+* PROJECTS
+
+** Projectile
+#+begin_src emacs-lisp
+  (use-package projectile
+    :ensure t
+    :config
+    (projectile-mode 1))
+#+end_src
+
+* UI
+
+** Dashboard
+#+begin_src emacs-lisp
+
+  (use-package dashboard
+    :ensure t
+    :init
+    (setq initial-buffer-choice 'dashboard-open)
+    (setq dashboard-set-heading-icons t)
+    (setq dashboard-set-file-icons t)
+    (setq dashboard-banner-logo-title "There are things you can't see unless you change your standing.")
+    (setq dashboard-startup-banner "/Users/batmi/.emacs.d/heart.jpeg")
+    (setq dashboard-center-content nil)
+    (setq dashboard-items '((recents . 5)
+                            (agenda . 5)
+                            (bookmarks . 3)
+                            (projects . 3)
+                            (registers . 3)))
+    :config
+    (dashboard-setup-startup-hook))
+
+#+end_src
+
+** Modeline
+#+begin_src emacs-lisp
+
+  (use-package doom-modeline
+    :ensure t
+    :init (doom-modeline-mode 1))
+
+#+end_src
+
+** All the icons
+#+begin_src emacs-lisp
+
+  (use-package all-the-icons
+    :ensure t
+    :if (display-graphic-p))
+
+  (use-package all-the-icons-dired
+    :hook (dired-mode . (lambda () (all-the-icons-dired-mode t))))
+
+#+end_src
+
+** Theme
+#+begin_src emacs-lisp
+  (use-package ef-themes
+    :ensure t
+    :config
+    (load-theme 'ef-cherie))
+
+#+end_src
+
+** Transparency
+#+begin_src emacs-lisp
+  (add-to-list 'default-frame-alist '(alpha-background . 90))
+#+end_src
+
+* ORGMODE
+
+** Enabling Table of Contents
+#+begin_src emacs-lisp
+
+  (use-package toc-org
+    :commands toc-org-enable
+    :init (add-hook 'org-mode-hook 'toc-org-enable))
+
+#+end_src
+
+** Disabling electric indent
+#+begin_src emacs-lisp
+  (electric-indent-mode -1)
+  (setq org-edit-src-content-indentation 2)
+#+end_src
+
+** Source code block tag expansion
+
+#+begin_src emacs-lisp
+  (require 'org-tempo)
+#+end_src
+
+* KEYBINDING
+
+** General Keybinding
+#+begin_src emacs-lisp
+
+  (global-set-key (kbd "M-i") #'previous-line)
+  (global-set-key (kbd "M-j") #'backward-char)
+  (global-set-key (kbd "M-k") #'next-line)
+  (global-set-key (kbd "M-l") #'forward-char)
+
+  (global-set-key (kbd "M-u") #'backward-word)
+  (global-set-key (kbd "M-o") #'forward-word)
+
+#+end_src
+
+** Which Key
+#+begin_src emacs-lisp
+
+  (use-package which-key
+    :init
+      (which-key-mode 1)
+    :config
+      (setq which-key-side-window-location 'bottom
+	    which-key-sort-oder #'which-key-key-order-alpha
+	    which-key-sort-uppercase-first nil
+	    which-key-add-column-padding 1
+	    which-key-max-display-columns nil
+	    which-key-side-windows-slot -10
+	    which-key-side-window-max-height 0.25
+	    which-key-idle-delay 0.0
+	    which-key-max-description-lenght 25
+	    which-key-allow-imprecise-window-fit t
+	    which-key-separator " -> "))
+
+#+end_src
+
+* PROGRAMMING
+
+** Eglot
+#+begin_src emacs-lisp
+
+  (use-package eglot
+    :bind (("C-c l l" . eglot)
+           ("C-c l a" . eglot-code-actions)
+           ("C-c l r" . eglot-rename)
+           ("C-c l f" . eglot-format)))
+
+#+end_src
+
+** Completition
+
+*** Ivy . Counsel . Ivy-rich
+ + Ivy, a generic completion mechanism for emacs.
+ + Counsel, a collection of Ivy-enhanced versions of common Emacs commands.
+ + Ivy-rich, allows us to add descriptions alongside the commands in M-x.
+
+#+begin_src emacs-lisp
+
+   (use-package counsel
+     :after ivy
+     :config (counsel-mode))
+
+   (use-package ivy
+     :bind
+     (("C-c C-r" . ivy-resume)
+      ("C-x B" . ivy-switch-buffer-other-window))
+     :custom
+     (setq ivy-use-virtual-buffers t)
+     (setq ivy-count-format "(%d/%d) ")
+     (setq enable-recursive-minibuffers t)
+     :config
+     (ivy-mode))
+
+  (use-package all-the-icons-ivy-rich
+    :ensure t
+    :init (all-the-icons-ivy-rich-mode 1))
+
+  (use-package ivy-rich
+    :after ivy
+    :ensure t
+    :init (ivy-rich-mode 1)
+    :custom
+    (ivy-virtual-abbreviate 'full
+     ivy-rich-switch-buffer-align-virtual-buffer t
+     ivy-rich-path-style 'abbrev)
+    :config
+    (ivy-set-display-transformer 'ivy-swtich-buffer
+                                 'ivy-rich-switch-buffer-transformer))
+
+#+end_src
+
+*** Code-completion framework
+#+begin_src emacs-lisp
+  (use-package company
+    :defer 2
+    :diminish
+    :custom
+    (company-begin-commands '(self-insert-command))
+    (company-idle-delay .1)
+    (company-minimum-prefix-lenght 2)
+    (company-show-numbers t)
+    (company-tooltip-align-annotations 't)
+    (global-company-mode t))
+
+  (use-package company-box
+    :after company
+    :diminish
+    :hook(company-mode . company-box-mode))
+#+end_src
+
+** Treesiteer
+#+begin_src emacs-lisp
+
+  (use-package treesit-auto
+    :ensure t
+    :custom (treesit-auto-install 'prompt)
+    :config (global-treesit-auto-mode))
+
+#+end_src
+
+* SHELLS AND TERMINALS
+
+** Eshell
+#+begin_src emacs-lisp
+
+  (use-package eshell-syntax-highlighting
+    :after esh-mode
+    :config
+    (eshell-syntax-highlighting-global-mode +1))
+
+  (setq eshell-rc-script (concat user-emacs-directory "eshell/profile")
+        eshell-aliases-file (concat user-emacs-directory "eshell/aliases")
+        eshell-history-size 5000
+        eshell-buffer-maximun-lines 5000
+        eshell-hist-ignoredups t
+        eshell-scroll-to-bottom-on-input t
+        eshell-destroy-buffer-when-process-dies t
+        eshell-visual-commands'("bash" "htop" "ssh" "top" "zsh"))
+
+#+end_src
+
+* GIT
+
+** Magit
+#+begin_src emacs-lisp
+
+  (use-package magit
+    :ensure t
+    :hook (after-save . magit-after-save-refresh-status))
+
+#+end_src
