@@ -1,5 +1,5 @@
-cru#+TITLE:Batmi GNU Emacs Config
 #+AUTHOR: Nicolas Stirnemann (Batmi)
+#+TITLE: Batmi GNU Emacs Config
 #+DESCRIPTION: Batmi's personal Emacs config
 #+STARTUP: showeverything
 #+OPTIONS: toc:2
@@ -8,6 +8,7 @@ cru#+TITLE:Batmi GNU Emacs Config
 - [[#emacs][EMACS]]
   - [[#changing-inner-emacs-default][Changing inner emacs default]]
   - [[#change-built-in-packages][Change Built-In Packages]]
+  - [[#savehist][Savehist]]
 - [[#graphical-user-interface-tweaks][GRAPHICAL USER INTERFACE TWEAKS]]
   - [[#change-font][Change Font]]
   - [[#display-line-number-and-truncated-lines][Display line number and truncated lines]]
@@ -22,18 +23,22 @@ cru#+TITLE:Batmi GNU Emacs Config
   - [[#modeline][Modeline]]
   - [[#all-the-icons][All the icons]]
   - [[#theme][Theme]]
-  - [[#transparency][Transparency]]
 - [[#orgmode][ORGMODE]]
   - [[#enabling-table-of-contents][Enabling Table of Contents]]
   - [[#disabling-electric-indent][Disabling electric indent]]
   - [[#source-code-block-tag-expansion][Source code block tag expansion]]
 - [[#keybinding][KEYBINDING]]
   - [[#general-keybinding][General Keybinding]]
-  - [[#which-key][Which Key]]
 - [[#programming][PROGRAMMING]]
   - [[#eglot][Eglot]]
   - [[#completition][Completition]]
   - [[#treesiteer][Treesiteer]]
+  - [[#lint][Lint]]
+- [[#language-specefic][LANGUAGE SPECEFIC]]
+  - [[#python][Python]]
+  - [[#lua][Lua]]
+  - [[#rust][Rust]]
+  - [[#zig][Zig]]
 - [[#shells-and-terminals][SHELLS AND TERMINALS]]
   - [[#eshell][Eshell]]
 - [[#git][GIT]]
@@ -47,10 +52,20 @@ cru#+TITLE:Batmi GNU Emacs Config
   ;; INTERNAL PACKAGES
   (use-package emacs
     :init
-    :hook ((before-save . delete-trailing-whitespace)
-           (text-mode   . visual-line-mode))
-    :mode (("\\.tsx?$"  . typescript-ts-mode)
-           ("\\.ya?ml$" . yaml-ts-mode)))
+    (setq completion-cycle-threshold 3)
+    (setq tab-always-indent 'complete)
+    (defun crm-indicator (args)
+      (cons (format "[CRM%s] %s"
+                  (replace-regexp-in-string
+                   "\\`\\[.*?]\\*\\|\\[.*?]\\*\\'" ""
+                   crm-separator)
+                  (car args))
+          (cdr args)))
+    (advice-add #'completing-read-multiple :filter-args #'crm-indicator)
+    (setq minibuffer-prompt-properties
+          '(read-only t cursor-intangible t face minibuffer-prompt))
+    (add-hook 'minibuffer-setup-hook #'cursor-intangible-mode)
+    (setq enable-recursive-minibuffers t)
 
 #+end_src
 
@@ -63,6 +78,13 @@ cru#+TITLE:Batmi GNU Emacs Config
     (setq show-paren-delay 0)
     :config
     (show-paren-mode +1))
+
+#+end_src
+
+** Savehist
+#+begin_src emacs-lisp
+
+  (savehist-mode t)
 
 #+end_src
 
@@ -126,9 +148,10 @@ cru#+TITLE:Batmi GNU Emacs Config
 
   (use-package exec-path-from-shell
     :ensure t
+    :if (memq window-system '(mac ns x))
     :config
-    (when (memq window-system '(mac ns x))
-      (exec-path-from-shell-initialize)))
+    (setq exec-path-from-shell-variables '("PATH" "GOPATH"))
+    (exec-path-from-shell-initialize))
 
 #+end_src
 
@@ -192,13 +215,8 @@ cru#+TITLE:Batmi GNU Emacs Config
   (use-package ef-themes
     :ensure t
     :config
-    (load-theme 'ef-cherie))
+    (load-theme 'ef-cherie t))
 
-#+end_src
-
-** Transparency
-#+begin_src emacs-lisp
-  (add-to-list 'default-frame-alist '(alpha-background . 90))
 #+end_src
 
 * ORGMODE
@@ -239,99 +257,75 @@ cru#+TITLE:Batmi GNU Emacs Config
 
 #+end_src
 
-** Which Key
-#+begin_src emacs-lisp
-
-  (use-package which-key
-    :init
-      (which-key-mode 1)
-    :config
-      (setq which-key-side-window-location 'bottom
-	    which-key-sort-oder #'which-key-key-order-alpha
-	    which-key-sort-uppercase-first nil
-	    which-key-add-column-padding 1
-	    which-key-max-display-columns nil
-	    which-key-side-windows-slot -10
-	    which-key-side-window-max-height 0.25
-	    which-key-idle-delay 0.0
-	    which-key-max-description-lenght 25
-	    which-key-allow-imprecise-window-fit t
-	    which-key-separator " -> "))
-
-#+end_src
-
 * PROGRAMMING
 
 ** Eglot
 #+begin_src emacs-lisp
 
   (use-package eglot
-    :bind (("C-c l l" . eglot)
-           ("C-c l a" . eglot-code-actions)
-           ("C-c l r" . eglot-rename)
-           ("C-c l f" . eglot-format)))
+    :ensure nil
+    :hook (
+     (zig-mode-hook . eglot-ensure)
+     (python-ts-mode-hook . eglot-ensure)
+     (c-ts-mode-hook . eglot-ensure)
+     (c++-ts-mode-hook . eglot-ensure)
+     (rustic-mode-hook . eglot-ensure)
+     (css-ts-mode-hook . eglot-ensure)
+     (html-mode-hook . eglot-ensure)
+     (js-ts-mode-hook . eglot-ensure)
+     (js-jsx-mode-hook . eglot-ensure)
+     (typescript-ts-mode . eglot-ensure)
+     (tsx-ts-mode-hook . eglot-ensure))
+    :bind (("C-c l b" . eglot-format-buffer)
+     ("C-c l a" . eglot-code-actions)
+     ("C-c l e" . eglot-reconnect)
+     ("C-c l r" . eglot-rename)))
 
 #+end_src
 
 ** Completition
 
-*** Ivy . Counsel . Ivy-rich
- + Ivy, a generic completion mechanism for emacs.
+*** Vertico . Orderless
+ + Vertico, minimalist completition for minibuffer
  + Counsel, a collection of Ivy-enhanced versions of common Emacs commands.
- + Ivy-rich, allows us to add descriptions alongside the commands in M-x.
 
 #+begin_src emacs-lisp
 
-   (use-package counsel
-     :after ivy
-     :config (counsel-mode))
-
-   (use-package ivy
-     :bind
-     (("C-c C-r" . ivy-resume)
-      ("C-x B" . ivy-switch-buffer-other-window))
-     :custom
-     (setq ivy-use-virtual-buffers t)
-     (setq ivy-count-format "(%d/%d) ")
-     (setq enable-recursive-minibuffers t)
-     :config
-     (ivy-mode))
-
-  (use-package all-the-icons-ivy-rich
+  ;; Enable vertico
+  (use-package vertico
     :ensure t
-    :init (all-the-icons-ivy-rich-mode 1))
-
-  (use-package ivy-rich
-    :after ivy
-    :ensure t
-    :init (ivy-rich-mode 1)
     :custom
-    (ivy-virtual-abbreviate 'full
-     ivy-rich-switch-buffer-align-virtual-buffer t
-     ivy-rich-path-style 'abbrev)
-    :config
-    (ivy-set-display-transformer 'ivy-swtich-buffer
-                                 'ivy-rich-switch-buffer-transformer))
+    (vertico-cycle t)
+    :init
+    (vertico-mode))
+
+  (use-package orderless
+    :ensure t
+    :init
+    (setq completion-styles '(orderless basic)
+          completion-category-defaults nil
+          completion-category-overrides '((file (styles partial-completion)))))
 
 #+end_src
 
 *** Code-completion framework
 #+begin_src emacs-lisp
-  (use-package company
-    :defer 2
-    :diminish
-    :custom
-    (company-begin-commands '(self-insert-command))
-    (company-idle-delay .1)
-    (company-minimum-prefix-lenght 2)
-    (company-show-numbers t)
-    (company-tooltip-align-annotations 't)
-    (global-company-mode t))
 
-  (use-package company-box
-    :after company
-    :diminish
-    :hook(company-mode . company-box-mode))
+  (use-package corfu
+  :ensure t
+  :custom
+  (corfu-cycle t)
+  (corfu-auto t)
+  (corfu-separator ?\s)
+  (corfu-quit-at-boundary nil)
+  (corfu-preview-current nil)
+  (corfu-preselect 'prompt
+  (corfu-scroll-margin 5)
+  :init
+  (global-corfu-mode))
+
+)
+
 #+end_src
 
 ** Treesiteer
@@ -342,6 +336,68 @@ cru#+TITLE:Batmi GNU Emacs Config
     :custom (treesit-auto-install 'prompt)
     :config (global-treesit-auto-mode))
 
+#+end_src
+
+** Lint
+#+begin_src emacs-lisp
+
+(use-package flycheck
+  :ensure t`
+  :init (global-flycheck-mode))
+#+end_src
+
+* LANGUAGE SPECEFIC
+
+** Python
+
+*** Poetry
+#+begin_src emacs-lisp
+  (use-package poetry
+    :ensure t)
+#+end_src
+
+*** Blacken
+#+begin_src emacs-lisp
+  (use-package blacken
+    :ensure t
+    :defer t
+    :custom
+    (blacken-allow-py36 t)
+    (blacken-skip-string-normalization t)
+    (blacken-only-if-project-is-blackened t)
+    (black-fast-unsafe t)
+    :hook (python-base-mode-hook . blacken-mode))
+#+end_src
+
+** Lua
+#+begin_src emacs-lisp
+  (use-package lua-mode
+    :ensure t
+    :defer t
+    :bind (:map lua-mode-map
+          ("C-c C-r" . lua-send-region)
+          ("C-c C-e" . lua-send-current-line)))
+#+end_src
+
+** Rust
+#+begin_src emacs-lisp
+  (use-package rustic
+    :custom
+    (rustic-lsp-client 'eglot)
+    :ensure t
+    :defer t)
+
+  (use-package cargo
+    :ensure t
+    :defer t
+    :hook ((rust-ts-mode-hook rustic-mode-hook) . cargo-minor-mode))
+#+end_src
+
+** Zig
+#+begin_src emacs-lisp
+  (use-package zig-mode
+    :ensure t
+    :defer t)
 #+end_src
 
 * SHELLS AND TERMINALS

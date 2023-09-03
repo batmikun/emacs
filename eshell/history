@@ -1,2 +1,5 @@
 ls
+ls
+exit
+docker-compose run BrainHiMessangerExample.py
 exit
