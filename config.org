@@ -5,6 +5,7 @@
 #+OPTIONS: toc:2
 
 * TABLE OF CONTENTS :toc:
+- [[#bootsraping-package-manager][BOOTSRAPING PACKAGE MANAGER]]
 - [[#emacs][EMACS]]
   - [[#changing-inner-emacs-default][Changing inner emacs default]]
   - [[#change-built-in-packages][Change Built-In Packages]]
@@ -12,29 +13,33 @@
 - [[#graphical-user-interface-tweaks][GRAPHICAL USER INTERFACE TWEAKS]]
   - [[#change-font][Change Font]]
   - [[#display-line-number-and-truncated-lines][Display line number and truncated lines]]
-- [[#important-programs-to-load-first][IMPORTANT PROGRAMS TO LOAD FIRST]]
-  - [[#adding-the-scripts-directory-to-path][Adding the scripts directory to path]]
-  - [[#sourcing-the-scripts][Sourcing the Scripts]]
+  - [[#scrolling][Scrolling]]
 - [[#fix-path][FIX PATH]]
 - [[#projects][PROJECTS]]
   - [[#projectile][Projectile]]
 - [[#ui][UI]]
   - [[#dashboard][Dashboard]]
   - [[#modeline][Modeline]]
-  - [[#all-the-icons][All the icons]]
+  - [[#nerd-icons][Nerd icons]]
   - [[#theme][Theme]]
 - [[#orgmode][ORGMODE]]
   - [[#enabling-table-of-contents][Enabling Table of Contents]]
+  - [[#indent][Indent]]
   - [[#disabling-electric-indent][Disabling electric indent]]
   - [[#source-code-block-tag-expansion][Source code block tag expansion]]
 - [[#keybinding][KEYBINDING]]
+  - [[#which-key][Which Key]]
   - [[#general-keybinding][General Keybinding]]
+- [[#search][SEARCH]]
+  - [[#deadgrep][Deadgrep]]
 - [[#programming][PROGRAMMING]]
   - [[#eglot][Eglot]]
   - [[#completition][Completition]]
+  - [[#jump-to-definition][Jump to definition]]
   - [[#treesiteer][Treesiteer]]
   - [[#lint][Lint]]
 - [[#language-specefic][LANGUAGE SPECEFIC]]
+  - [[#javascript][Javascript]]
   - [[#python][Python]]
   - [[#lua][Lua]]
   - [[#rust][Rust]]
@@ -43,6 +48,26 @@
   - [[#eshell][Eshell]]
 - [[#git][GIT]]
   - [[#magit][Magit]]
+
+* BOOTSRAPING PACKAGE MANAGER
+#+begin_src emacs-lisp
+
+  (defvar bootstrap-version)
+  (let ((bootstrap-file
+         (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+        (bootstrap-version 6))
+    (unless (file-exists-p bootstrap-file)
+      (with-current-buffer
+          (url-retrieve-synchronously
+           "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
+           'silent 'inhibit-cookies)
+        (goto-char (point-max))
+        (eval-print-last-sexp)))
+    (load bootstrap-file nil 'nomessage))
+
+  (straight-use-package 'use-package)
+
+#+end_src
 
 * EMACS
 
@@ -73,7 +98,6 @@
 #+begin_src emacs-lisp
 
   (use-package paren
-    :ensure nil
     :init
     (setq show-paren-delay 0)
     :config
@@ -127,30 +151,23 @@
 
 #+end_src
 
-* IMPORTANT PROGRAMS TO LOAD FIRST
-
-** Adding the scripts directory to path
+** Scrolling
 #+begin_src emacs-lisp
-
-  (add-to-list 'load-path "~/.emacs.d/scripts/")
-
-#+end_src
-
-** Sourcing the Scripts
-#+begin_src emacs-lisp
-
-  (require 'elpaca)
-
+  (pixel-scroll-precision-mode 1)
+  (setq mouse-wheel-scroll-amount '(1 ((shift) . 1)))
+  (setq mouse-wheel-progressive-speed nil)
+  (setq mouse-wheel-follow-mouse 't)
+  (setq scroll-step 1)
 #+end_src
 
 * FIX PATH
 #+begin_src emacs-lisp
 
   (use-package exec-path-from-shell
-    :ensure t
+    :straight t
     :if (memq window-system '(mac ns x))
     :config
-    (setq exec-path-from-shell-variables '("PATH" "GOPATH"))
+    (setq exec-path-from-shell-variables '("PATH" "GOPATH" "MANPATH"))
     (exec-path-from-shell-initialize))
 
 #+end_src
@@ -160,7 +177,7 @@
 ** Projectile
 #+begin_src emacs-lisp
   (use-package projectile
-    :ensure t
+    :straight t
     :config
     (projectile-mode 1))
 #+end_src
@@ -171,7 +188,7 @@
 #+begin_src emacs-lisp
 
   (use-package dashboard
-    :ensure t
+    :straight t
     :init
     (setq initial-buffer-choice 'dashboard-open)
     (setq dashboard-set-heading-icons t)
@@ -193,27 +210,30 @@
 #+begin_src emacs-lisp
 
   (use-package doom-modeline
-    :ensure t
+    :straight t
     :init (doom-modeline-mode 1))
 
 #+end_src
 
-** All the icons
+** Nerd icons
 #+begin_src emacs-lisp
 
-  (use-package all-the-icons
-    :ensure t
-    :if (display-graphic-p))
+  (use-package nerd-icons
+     :straight t
+     :custom
+     (nerd-icons-font-family "JetBrainsMono Nerd Font"))
 
-  (use-package all-the-icons-dired
-    :hook (dired-mode . (lambda () (all-the-icons-dired-mode t))))
+  (use-package nerd-icons-dired
+    :straight t
+    :hook
+    (dired-mode . nerd-icons-dired-mode))
 
 #+end_src
 
 ** Theme
 #+begin_src emacs-lisp
   (use-package ef-themes
-    :ensure t
+    :straight t
     :config
     (load-theme 'ef-cherie t))
 
@@ -225,8 +245,16 @@
 #+begin_src emacs-lisp
 
   (use-package toc-org
-    :commands toc-org-enable
-    :init (add-hook 'org-mode-hook 'toc-org-enable))
+    :straight t
+    :after org
+    :hook (org-mode . toc-org-enable))
+
+#+end_src
+
+** Indent
+#+begin_src emacs-lisp
+
+  (use-package org-indent :after org :straight nil :delight)
 
 #+end_src
 
@@ -244,6 +272,16 @@
 
 * KEYBINDING
 
+** Which Key
+#+begin_src emacs-lisp
+
+  (use-package which-key
+    :straight t
+    :config
+    (add-hook 'after-init-hook 'which-key-mode))
+
+#+end_src
+
 ** General Keybinding
 #+begin_src emacs-lisp
 
@@ -254,6 +292,17 @@
 
   (global-set-key (kbd "M-u") #'backward-word)
   (global-set-key (kbd "M-o") #'forward-word)
+  (global-set-key (kbd "<f5>") #'deadgrep)
+
+#+end_src
+
+* SEARCH
+
+** Deadgrep
+#+begin_src emacs-lisp
+
+  (use-package deadgrep
+    :straight t)
 
 #+end_src
 
@@ -261,25 +310,33 @@
 
 ** Eglot
 #+begin_src emacs-lisp
+  (use-package eglot 
+    :custom
+    (eldoc-echo-area-use-multiline-p)
+    (eglot-autoshutdown t)
+    (eglot-events-buffer-size 0)
+    (read-process-output-max (* 1024 1024))
+    :config
+    (add-to-list 'eglot-server-programs '((python-mode python-ts-mode) . ("pyright-langserver" "--stdio")))
+    :bind (
+    ("C-c l b" . eglot-format-buffer)
+	  ("C-c l a" . eglot-code-actions)
+	  ("C-c l e" . eglot-reconnect)
+	  ("C-c l r" . eglot-rename)))
 
-  (use-package eglot
-    :ensure nil
-    :hook (
-     (zig-mode-hook . eglot-ensure)
-     (python-ts-mode-hook . eglot-ensure)
-     (c-ts-mode-hook . eglot-ensure)
-     (c++-ts-mode-hook . eglot-ensure)
-     (rustic-mode-hook . eglot-ensure)
-     (css-ts-mode-hook . eglot-ensure)
-     (html-mode-hook . eglot-ensure)
-     (js-ts-mode-hook . eglot-ensure)
-     (js-jsx-mode-hook . eglot-ensure)
-     (typescript-ts-mode . eglot-ensure)
-     (tsx-ts-mode-hook . eglot-ensure))
-    :bind (("C-c l b" . eglot-format-buffer)
-     ("C-c l a" . eglot-code-actions)
-     ("C-c l e" . eglot-reconnect)
-     ("C-c l r" . eglot-rename)))
+  (add-hook 'python-base-mode-hook 'eglot-ensure)
+  (add-hook 'zig-mode-hook 'eglot-ensure)
+  (add-hook 'go-ts-mode-hook 'eglot-ensure)
+  (add-hook 'c-ts-mode-hook 'eglot-ensure)
+  (add-hook 'c++-ts-mode-hook 'eglot-ensure)
+  (add-hook 'kotlin-mode-hook 'eglot-ensure)
+  (add-hook 'rustic-mode-hook 'eglot-ensure)
+  (add-hook 'css-ts-mode-hook 'eglot-ensure)
+  (add-hook 'html-mode-hook 'eglot-ensure)
+  (add-hook 'js-base-mode-hook 'eglot-ensure)
+  (add-hook 'tsx-ts-mode-hook 'eglot-ensure)
+  (add-hook 'latex-mode-hook 'eglot-ensure)
+  (add-hook 'php-mode-hook 'eglot-ensure)
 
 #+end_src
 
@@ -293,14 +350,14 @@
 
   ;; Enable vertico
   (use-package vertico
-    :ensure t
+    :straight t
     :custom
     (vertico-cycle t)
     :init
     (vertico-mode))
 
   (use-package orderless
-    :ensure t
+    :straight t
     :init
     (setq completion-styles '(orderless basic)
           completion-category-defaults nil
@@ -312,14 +369,14 @@
 #+begin_src emacs-lisp
 
   (use-package corfu
-  :ensure t
+  :straight t
   :custom
   (corfu-cycle t)
   (corfu-auto t)
   (corfu-separator ?\s)
   (corfu-quit-at-boundary nil)
   (corfu-preview-current nil)
-  (corfu-preselect 'prompt
+  (corfu-preselect 'prompt)
   (corfu-scroll-margin 5)
   :init
   (global-corfu-mode))
@@ -328,11 +385,20 @@
 
 #+end_src
 
+** Jump to definition
+#+begin_src emacs-lisp
+  (use-package dumb-jump
+  :straight t)
+
+  (setq xref-show-definitions-function #'xref-show-definitions-completing-read)
+  (add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
+#+end_src
+
 ** Treesiteer
 #+begin_src emacs-lisp
 
   (use-package treesit-auto
-    :ensure t
+    :straight t
     :custom (treesit-auto-install 'prompt)
     :config (global-treesit-auto-mode))
 
@@ -341,25 +407,41 @@
 ** Lint
 #+begin_src emacs-lisp
 
-(use-package flycheck
-  :ensure t`
-  :init (global-flycheck-mode))
+;;  (use-package flycheck
+;;    :straight t
+;;    :init (global-flycheck-mode))
+
 #+end_src
 
 * LANGUAGE SPECEFIC
 
+** Javascript
+#+begin_src emacs-lisp
+  (add-hook 'js-ts-mode-hook
+	  (lambda()
+	    (local-unset-key (kbd "M-."))))
+
+  (setq js-indent-level 2)
+#+end_src
+
 ** Python
 
-*** Poetry
+*** Pyenv
 #+begin_src emacs-lisp
-  (use-package poetry
-    :ensure t)
+
+  (use-package pyvenv
+    :straight t
+    :init
+    (setenv "WORKON_HOME" "/Users/batmi/Library/Caches/pypoetry/virtualenvs/")
+    (pyvenv-mode 1)
+    (pyvenv-tracking-mode 1))
+
 #+end_src
 
 *** Blacken
 #+begin_src emacs-lisp
   (use-package blacken
-    :ensure t
+    :straight t
     :defer t
     :custom
     (blacken-allow-py36 t)
@@ -372,7 +454,7 @@
 ** Lua
 #+begin_src emacs-lisp
   (use-package lua-mode
-    :ensure t
+    :straight t
     :defer t
     :bind (:map lua-mode-map
           ("C-c C-r" . lua-send-region)
@@ -382,13 +464,13 @@
 ** Rust
 #+begin_src emacs-lisp
   (use-package rustic
+    :straight t
+    :defer t
     :custom
-    (rustic-lsp-client 'eglot)
-    :ensure t
-    :defer t)
+    (rustic-lsp-client 'eglot))
 
   (use-package cargo
-    :ensure t
+    :straight t
     :defer t
     :hook ((rust-ts-mode-hook rustic-mode-hook) . cargo-minor-mode))
 #+end_src
@@ -396,7 +478,7 @@
 ** Zig
 #+begin_src emacs-lisp
   (use-package zig-mode
-    :ensure t
+    :straight t
     :defer t)
 #+end_src
 
@@ -427,7 +509,7 @@
 #+begin_src emacs-lisp
 
   (use-package magit
-    :ensure t
+    :straight t
     :hook (after-save . magit-after-save-refresh-status))
 
 #+end_src

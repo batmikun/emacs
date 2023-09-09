@@ -44,5 +44,3 @@
 
  ;; Block until current queue processed.
  (elpaca-wait)
-
-(provide 'elpaca)

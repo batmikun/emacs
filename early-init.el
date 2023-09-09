@@ -17,15 +17,13 @@
 (fringe-mode             0)
 (tool-bar-mode           0)
 
+;; INITIALIZE IN FULLSCREEN
+(add-to-list 'default-frame-alist '(fullscreen . fullboth))
+
 ;; ALIASES & VARIABLES
 (defalias 'yes-or-no-p 'y-or-n-p)
 (defvar custom-file-path (expand-file-name "custom.el" user-emacs-directory))
 
-
-;; CUSTOMISATIONS
-(setq-default truncate-lines  -1
-              indent-tabs-mode nil
-              tab-width        2)
 
 (setq ring-bell-function              'ignore
       inhibit-splash-screen           t
@@ -38,6 +36,7 @@
       ;; MODE LINE
       line-number-mode                t
       column-number-mode              t
+      truncate-lines                  nil
 
       ;; DISABLE TAB BAR
       tab-bar-close-button-show       nil
@@ -52,10 +51,11 @@
 
       ;; EDIT MODE
       require-final-newline           t
+      indent-tabs-mode                nil
+      tab-width                       4
 
       ;; PERFORMANCE
       gc-cons-threshold               100000000
-      read-process-output-max         (* 1024 1024)  ;; 1mb
 
       ;; BACKUP
       backup-directory-alist         `((".*" . ,temporary-file-directory))

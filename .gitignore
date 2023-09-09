@@ -3,3 +3,10 @@ auto-save-list
 config.el
 elpaca
 tree-sitter
+custom.el
+history
+projectile-bookmarks.eld
+recentf
+straight
+transient
+elpa
