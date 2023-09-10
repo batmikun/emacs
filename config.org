@@ -12,11 +12,11 @@
   - [[#savehist][Savehist]]
 - [[#graphical-user-interface-tweaks][GRAPHICAL USER INTERFACE TWEAKS]]
   - [[#change-font][Change Font]]
-  - [[#display-line-number-and-truncated-lines][Display line number and truncated lines]]
   - [[#scrolling][Scrolling]]
 - [[#fix-path][FIX PATH]]
 - [[#projects][PROJECTS]]
   - [[#projectile][Projectile]]
+  - [[#perspective][Perspective]]
 - [[#ui][UI]]
   - [[#dashboard][Dashboard]]
   - [[#modeline][Modeline]]
@@ -25,7 +25,6 @@
 - [[#orgmode][ORGMODE]]
   - [[#enabling-table-of-contents][Enabling Table of Contents]]
   - [[#indent][Indent]]
-  - [[#disabling-electric-indent][Disabling electric indent]]
   - [[#source-code-block-tag-expansion][Source code block tag expansion]]
 - [[#keybinding][KEYBINDING]]
   - [[#which-key][Which Key]]
@@ -143,14 +142,6 @@
 
 #+end_src
 
-** Display line number and truncated lines
-#+begin_src emacs-lisp
-
-    (global-display-line-numbers-mode 1)
-    (global-visual-line-mode t)
-
-#+end_src
-
 ** Scrolling
 #+begin_src emacs-lisp
   (pixel-scroll-precision-mode 1)
@@ -182,6 +173,21 @@
     (projectile-mode 1))
 #+end_src
 
+** Perspective
+#+begin_src emacs-lisp
+  (use-package perspective
+    :straight t
+    :bind (
+    ("C-x b" . persp-switch-to-buffer*)
+    ("C-x k" . persp-kill-buffer*))
+    :custom
+    (persp-mode-prefix-key (kbd "C-z"))
+    :init
+    (persp-mode))
+
+  (setq persp-state-default-file "~/.emacs.d/sessions")
+#+end_src
+
 * UI
 
 ** Dashboard
@@ -211,7 +217,12 @@
 
   (use-package doom-modeline
     :straight t
-    :init (doom-modeline-mode 1))
+    :init (doom-modeline-mode 1)
+    :config
+    (setq doom-modeline-height 30
+          doom-modeline-bar-width 5
+          doom-modeline-persp-name t
+          doom-modeline-persp-icon t))
 
 #+end_src
 
@@ -231,11 +242,29 @@
 #+end_src
 
 ** Theme
+
+*** ef-themes
 #+begin_src emacs-lisp
   (use-package ef-themes
+    :straight t)
+
+#+end_src
+
+*** doom-themes
+#+begin_src emacs-lisp
+  (use-package doom-themes
     :straight t
     :config
-    (load-theme 'ef-cherie t))
+    (setq doom-themes-enable-bold t
+	  doom-themes-enable-italic t)) 
+
+#+end_src
+
+*** load theme
+#+begin_src emacs-lisp
+
+  (load-theme 'doom-tokyo-night t)
+  (doom-themes-org-config)
 
 #+end_src
 
@@ -255,19 +284,19 @@
 #+begin_src emacs-lisp
 
   (use-package org-indent :after org :straight nil :delight)
+  (setq org-edit-src-content-indentation 0)
 
-#+end_src
-
-** Disabling electric indent
-#+begin_src emacs-lisp
-  (electric-indent-mode -1)
-  (setq org-edit-src-content-indentation 2)
 #+end_src
 
 ** Source code block tag expansion
 
 #+begin_src emacs-lisp
   (require 'org-tempo)
+
+  (add-hook 'org-mode-hook (lambda ()
+    (setq-local electric-pair-inhibit-predicate
+      `(lambda (c)
+         (if (char-equal c ?< t (,electric-pair-inhibit-predicate c))))))
 #+end_src
 
 * KEYBINDING
@@ -293,6 +322,7 @@
   (global-set-key (kbd "M-u") #'backward-word)
   (global-set-key (kbd "M-o") #'forward-word)
   (global-set-key (kbd "<f5>") #'deadgrep)
+  (global-set-key [escape] 'keyboard-escape-quit)
 
 #+end_src
 

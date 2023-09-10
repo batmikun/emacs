@@ -6,16 +6,19 @@
 (set-language-environment   'utf-8)
 
 ;; INTERFACE
-(global-auto-revert-mode)
+(global-auto-revert-mode t)
 
 (menu-bar-mode           0)
-(electric-pair-mode      1)
-(delete-selection-mode   1)
+(scroll-bar-mode         0)
+(tool-bar-mode           0)
+
 (temp-buffer-resize-mode t)
 (xterm-mouse-mode        1)
-(scroll-bar-mode         0)
 (fringe-mode             0)
-(tool-bar-mode           0)
+
+(delete-selection-mode   1)
+(electric-pair-mode      1)
+(electric-indent-mode    0)
 
 ;; INITIALIZE IN FULLSCREEN
 (add-to-list 'default-frame-alist '(fullscreen . fullboth))
@@ -32,6 +35,10 @@
       select-enable-clipboard         t
       max-mini-window-height          3
       warning-minimum-level           :error
+
+      ;;
+      global-display-line-numbers-mode 1
+      global-visual-line-mode         t
 
       ;; MODE LINE
       line-number-mode                t

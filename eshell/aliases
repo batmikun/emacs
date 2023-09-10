@@ -1,0 +1,16 @@
+# Aliases for emacs commands
+alias ff find-file $1
+
+# Aliasing standard shell commands to better emacs alternatives
+alias less view-file $1
+
+# Changing "ls" to "exa"
+alias ls exa -al --color=always --group-directories-first $*
+alias la exa -a --color=always --group-directories-first $*
+alias ll exa -l --color=always --group-directories-first $*
+alias lt exa -aT --color=always --group-directories-first $*
+
+# Confirm begore overwriting something
+alias cp cp -i $1
+alias mv mv -i $1
+alias rm rm -i $1
