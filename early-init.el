@@ -5,7 +5,7 @@
 (set-default-coding-systems 'utf-8)
 (set-language-environment   'utf-8)
 
-;; INTERFACE
+;; ;; INTERFACE
 (global-auto-revert-mode t)
 
 (menu-bar-mode           0)
@@ -20,10 +20,10 @@
 (electric-pair-mode      1)
 (electric-indent-mode    0)
 
-;; INITIALIZE IN FULLSCREEN
+;; ;; INITIALIZE IN FULLSCREEN
 (add-to-list 'default-frame-alist '(fullscreen . fullboth))
 
-;; ALIASES & VARIABLES
+;; ;; ALIASES & VARIABLES
 (defalias 'yes-or-no-p 'y-or-n-p)
 (defvar custom-file-path (expand-file-name "custom.el" user-emacs-directory))
 
@@ -35,10 +35,6 @@
       select-enable-clipboard         t
       max-mini-window-height          3
       warning-minimum-level           :error
-
-      ;;
-      global-display-line-numbers-mode 1
-      global-visual-line-mode         t
 
       ;; MODE LINE
       line-number-mode                t
