@@ -14,6 +14,8 @@
   - [[#change-font][Change Font]]
   - [[#scrolling][Scrolling]]
 - [[#fix-path][FIX PATH]]
+- [[#evil-mode][EVIL MODE]]
+  - [[#evil-mode-extension][Evil Mode Extension]]
 - [[#projects][PROJECTS]]
   - [[#projectile][Projectile]]
   - [[#perspective][Perspective]]
@@ -166,6 +168,28 @@
 
 #+end_src
 
+* EVIL MODE
+#+begin_src emacs-lisp
+
+(use-package evil
+  :straight t
+  :init
+  (evil-mode 1)
+  (setq evil-undo-system 'undo-fu))
+
+#+end_src
+
+** Evil Mode Extension
+#+begin_src emacs-lisp
+
+(use-package undo-fu
+  :straight t)
+
+(use-package goto-chg
+  :straight t)
+
+#+end_src
+
 * PROJECTS
 
 ** Projectile
@@ -267,7 +291,7 @@
     :straight t
     :config
     (setq doom-themes-enable-bold t
-	  doom-themes-enable-italic t)) 
+	  doom-themes-enable-italic t))
 
 #+end_src
 
@@ -388,7 +412,7 @@
 
 ** Eglot
 #+begin_src emacs-lisp
-  (use-package eglot 
+  (use-package eglot
     :custom
     (eldoc-echo-area-use-multiline-p)
     (eglot-autoshutdown t)
@@ -460,8 +484,8 @@
 :custom
 (corfu-cycle t)
 (corfu-auto t)
-(corfu-auto-delay 1)
-(corfu-auto-prefix 2)
+(corfu-auto-delay 0.5)
+(corfu-auto-prefix 1)
 (corfu-separator ?\s)
 (corfu-quit-at-boundary nil)
 (corfu-quit-no-match 'separator)
@@ -504,7 +528,19 @@
 
  (use-package flycheck
    :straight t
-   :init (global-flycheck-mode))
+   :defer 2
+   :init (global-flycheck-mode t)
+   :custom
+   (flycheck-display-errors-delay .3)
+   (setq flycheck-check-syntax-automatically '(mode-enabled save idle-change))
+   (setq flycheck-highlighting-mode 'lines)
+   (setq flycheck-indication-mode 'left-margin)
+   (setq flycheck-checker-error-threshold 2000))
+
+(use-package flycheck-pos-tip
+  :straight t
+  :after flycheck
+  :init (flycheck-pos-tip-mode))
 
 #+end_src
 
@@ -563,7 +599,7 @@
     (blacken-skip-string-normalization t)
     (black-fast-unsafe t)
     (blacken-line-length 90))
-    
+
    (add-hook 'python-base-mode-hook  'blacken-mode)
 #+end_src
 

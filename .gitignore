@@ -11,3 +11,4 @@ straight
 transient
 elpa
 sessions
+./eshell/history

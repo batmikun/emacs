@@ -18,10 +18,7 @@
 
 (delete-selection-mode   1)
 (electric-pair-mode      1)
-(electric-indent-mode    0)
-
-;; ;; INITIALIZE IN FULLSCREEN
-(add-to-list 'default-frame-alist '(fullscreen . fullboth))
+(electric-indent-mode    1)
 
 ;; ;; ALIASES & VARIABLES
 (defalias 'yes-or-no-p 'y-or-n-p)
@@ -34,7 +31,6 @@
       select-enable-primary           t
       select-enable-clipboard         t
       max-mini-window-height          3
-      warning-minimum-level           :error
 
       ;; MODE LINE
       line-number-mode                t
@@ -55,7 +51,7 @@
       ;; EDIT MODE
       require-final-newline           t
       indent-tabs-mode                nil
-      tab-width                       4
+      tab-width                       2
 
       ;; PERFORMANCE
       gc-cons-threshold               100000000
@@ -74,3 +70,5 @@
       package-archive-priorities     '(("gnu-elpa" . 0)
                                        ("jcs-elpa" . 5)
                                        ("melpa"    . 10)))
+
+;;; early-init.el ends here
