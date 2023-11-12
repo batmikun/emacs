@@ -1,14 +1,13 @@
 .DS_STORE
 auto-save-list
-config.el
-elpaca
 tree-sitter
-custom.el
 history
 projectile-bookmarks.eld
 recentf
-straight
 transient
 elpa
+eln-cache
+elips-autofmt-cache
+.cache
 sessions
 ./eshell/history

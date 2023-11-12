@@ -1,67 +1,24 @@
-(setq package-enable-at-startup nil)
+;;; Early-init.el --- Early Init File -*- lexical-binding: t -*-
+;;; Commentary:
+;;; Code:
 
-;; UNICODE
-(prefer-coding-system       'utf-8)
-(set-default-coding-systems 'utf-8)
-(set-language-environment   'utf-8)
+;; Increase the GC threshold for faster startup
+;; The default is 800 kilobytes.  Measured in bytes.
+(setq gc-cons-threshold (* 50 1000 1000))
 
-;; ;; INTERFACE
-(global-auto-revert-mode t)
+;; Prefer loading newest compiled .el file
+(customize-set-variable 'load-prefer-newer noninteractive)
 
-(menu-bar-mode           0)
-(scroll-bar-mode         0)
-(tool-bar-mode           0)
-
-(temp-buffer-resize-mode t)
-(xterm-mouse-mode        1)
-(fringe-mode             0)
-
-(delete-selection-mode   1)
-(electric-pair-mode      1)
-(electric-indent-mode    1)
-
-;; ;; ALIASES & VARIABLES
-(defalias 'yes-or-no-p 'y-or-n-p)
-(defvar custom-file-path (expand-file-name "custom.el" user-emacs-directory))
-
-
-(setq ring-bell-function              'ignore
+(setq frame-inhibit-implied-resize t
+      comp-deferred-compilation nil
+      ring-bell-function              'ignore
       inhibit-splash-screen           t
-      initial-scratch-message         nil
-      select-enable-primary           t
-      select-enable-clipboard         t
-      max-mini-window-height          3
 
-      ;; MODE LINE
-      line-number-mode                t
-      column-number-mode              t
-      truncate-lines                  nil
+      ;; DISABLE COMP WARNINGS
+      native-comp-async-report-warnings-errors nil
 
-      ;; DISABLE TAB BAR
-      tab-bar-close-button-show       nil
-      tab-bar-mode                    nil
-      tab-bar-show                    nil
-
-      ;; SCROLLING
-      scroll-margin                   0
-      scroll-conservatively           100000
-      scroll-preserve-screen-position 1
-      auto-window-vscroll             nil
-
-      ;; EDIT MODE
-      require-final-newline           t
-      indent-tabs-mode                nil
-      tab-width                       2
-
-      ;; PERFORMANCE
-      gc-cons-threshold               100000000
-
-      ;; BACKUP
-      backup-directory-alist         `((".*" . ,temporary-file-directory))
-      auto-save-file-name-transforms `((".*" ,temporary-file-directory t))
-      default-directory              "~/"
-      create-lockfiles               nil
-      custom-file                    custom-file-path
+      ;; TAB WIDTH
+      indent-line-function           'insert-tab
 
       ;; PACKAGE ARCHIVES
       package-archives               '(("gnu-elpa" . "https://elpa.gnu.org/packages/")
