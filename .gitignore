@@ -7,7 +7,8 @@ recentf
 transient
 elpa
 eln-cache
-./kelips-autofmt-cache
-./cache
+elip-autofmt-cache/
+.cache
 sessions
-./eshell/history
+eshell/history
+eshell/lastdir
