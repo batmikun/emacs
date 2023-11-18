@@ -33,12 +33,6 @@
  (pyvenv-mode 1)
  (pyvenv-tracking-mode 1))
 
-(use-package
- python-black
- :ensure t
- :after python
- :hook (python-mode . python-black-on-save-mode-enable-dwim))
-
 ;; ;; GO
 (use-package
  go-mode
@@ -57,7 +51,6 @@
 (use-package js2-mode :ensure t)
 
 (add-hook 'js-mode-hook 'js2-minor-mode)
-
 
 ;; ;; TYPESCRIPT & TSX
 (use-package tsx-ts-mode :hook ((tsx-ts-mode . eglot-ensure)) :mode (("\\.tsx\\'" . tsx-ts-mode)))
@@ -86,6 +79,34 @@
 ;; ;; ZIG
 (use-package zig-mode :ensure t :defer t :hook ((zig-mode . eglot-ensure)))
 
+;; ;; ODIN
+(use-package odin-mode :ensure t :defer t)
+
+;; ;; NIM
+(use-package nim-mode :ensure t :defer t)
+
+;; ;; OCAML
+(use-package tuareg
+             :ensure t
+             :mode (("\\.ocamlinit" . tuareg-mode)
+                    (tuareg-mode . eglot-ensure)))
+
+(use-package dune :ensure t)
+
+(use-package merlin
+             :ensure t
+             :config
+             (add-hook 'tuareg-mode-hook #'merlin-mode))
+
+(use-package merlin-eldoc
+             :ensure t
+             :hook((tuareg-mode) . merlin-eldoc-setup))
+
+(use-package utop
+             :ensure t
+             :config
+             (add-hook 'tuareg-mode-hook #'utop-minor-mode))
+
 ;; ;; WEB MODE
 (use-package web-mode :ensure t :defer t)
 
@@ -96,7 +117,6 @@
 (use-package json-ts-mode :hook ((json-ts-mode . eglot-ensure)) :mode (("\\.json'" . json-ts-mode)))
 
 ;; ;; C
-
 (use-package c-mode :hook ((c-ts-mode . eglot-ensure)) :mode (("\\.c'" . c-ts-mode)))
 
 (use-package auto-header :ensure t :hook (c-ts-mode . auto-header-mode))
@@ -107,6 +127,15 @@
  :ensure t
  :commands (elisp-autofmt-mode elisp-autofmt-buffer)
  :hook (emacs-lisp-mode . elisp-autofmt-mode))
+
+;; ;; FORMATTER
+(use-package
+ format-all
+ :ensure t
+ :commands format-all-mode
+ :hook (prog-mode . format-all-mode)
+ :config
+ (setq-default format-all-formatters '(("Lua" (stylua)))))
 
 ;; ;; LINTING
 (use-package
@@ -122,7 +151,6 @@
  (setq flycheck-checker-error-threshold 200))
 
 (use-package flycheck-pos-tip :ensure t :after flycheck :init (flycheck-pos-tip-mode))
-
 
 ;; ;; SNIPETTS
 (use-package
