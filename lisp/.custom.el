@@ -6,7 +6,13 @@
  '(custom-safe-themes
    '("ff24d14f5f7d355f47d53fd016565ed128bf3af30eb7ce8cae307ee4fe7f3fd0" default))
  '(load-prefer-newer t t nil "Customized with use-package emacs")
- '(package-selected-packages nil))
+ '(package-selected-packages
+   '(auto-header cape cargo consult corfu dashboard deadgrep docker doom-modeline doom-themes dune
+     ef-themes elisp-autofmt exec-path-from-shell flycheck-pos-tip format-all go-mode hl-todo
+     lua-mode marginalia merlin-eldoc nerd-icons-corfu nerd-icons-dired nim-mode npm orderless
+     org-modern perspective python-black pyvenv rainbow-delimiters rustic smartparens solaire-mode
+     sudo-edit tide tldr toc-org treemacs-magit treemacs-nerd-icons treemacs-projectile utop vertico
+     web-mode which-key yasnippet-snippets zig-mode)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

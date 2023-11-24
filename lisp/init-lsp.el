@@ -11,6 +11,7 @@
  :config
  (add-to-list
   'eglot-server-programs '((python-mode python-ts-mode) . ("pyright-langserver" "--stdio")))
+ n
  :bind
  (("C-c l b" . eglot-format-buffer)
   ("C-c l a" . eglot-code-actions)
@@ -80,32 +81,33 @@
 (use-package zig-mode :ensure t :defer t :hook ((zig-mode . eglot-ensure)))
 
 ;; ;; ODIN
-(use-package odin-mode :ensure t :defer t)
+;; (use-package
+;;  odin-mode
+;;  :ensure t
+;;  :bind
+;;  (:map
+;;   odin-mode-map
+;;   ("C-c C-r" . 'odin-run-project)
+;;   ("C-c C-c" . 'odin-build-project)
+;;   ("C-c C-t" . 'odin-test-project)))
 
 ;; ;; NIM
 (use-package nim-mode :ensure t :defer t)
 
 ;; ;; OCAML
-(use-package tuareg
-             :ensure t
-             :mode (("\\.ocamlinit" . tuareg-mode)
-                    (tuareg-mode . eglot-ensure)))
+(use-package
+ tuareg
+ :ensure t
+ :mode (("\\.ocamlinit" . tuareg-mode))
+ :hook (tuareg-mode . eglot-ensure))
 
 (use-package dune :ensure t)
 
-(use-package merlin
-             :ensure t
-             :config
-             (add-hook 'tuareg-mode-hook #'merlin-mode))
+(use-package merlin :ensure t :config (add-hook 'tuareg-mode-hook #'merlin-mode))
 
-(use-package merlin-eldoc
-             :ensure t
-             :hook((tuareg-mode) . merlin-eldoc-setup))
+(use-package merlin-eldoc :ensure t :hook ((tuareg-mode) . merlin-eldoc-setup))
 
-(use-package utop
-             :ensure t
-             :config
-             (add-hook 'tuareg-mode-hook #'utop-minor-mode))
+(use-package utop :ensure t :config (add-hook 'tuareg-mode-hook #'utop-minor-mode))
 
 ;; ;; WEB MODE
 (use-package web-mode :ensure t :defer t)
@@ -134,8 +136,7 @@
  :ensure t
  :commands format-all-mode
  :hook (prog-mode . format-all-mode)
- :config
- (setq-default format-all-formatters '(("Lua" (stylua)))))
+ :config (setq-default format-all-formatters '(("Lua" (stylua)))))
 
 ;; ;; LINTING
 (use-package
