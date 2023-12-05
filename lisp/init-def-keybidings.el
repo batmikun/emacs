@@ -10,8 +10,8 @@
 (global-set-key (kbd "C--") 'text-scale-decrease)
 (global-set-key (kbd "C-w h")  'windmove-left)
 (global-set-key (kbd "C-w l") 'windmove-right)
-(global-set-key (kbd "C-w j")    'windmove-up)
-(global-set-key (kbd "C-w k")  'windmove-down)
+(global-set-key (kbd "C-w k")    'windmove-up)
+(global-set-key (kbd "C-w j")  'windmove-down)
 (global-set-key (kbd "C-w c")  'delete-window)
 
 (global-set-key (kbd "C-w d") 'kill-region)

@@ -11,7 +11,6 @@
  :config
  (add-to-list
   'eglot-server-programs '((python-mode python-ts-mode) . ("pyright-langserver" "--stdio")))
- n
  :bind
  (("C-c l b" . eglot-format-buffer)
   ("C-c l a" . eglot-code-actions)
