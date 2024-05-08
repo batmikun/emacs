@@ -20,4 +20,4 @@
                                        ("jcs-elpa" . 5)
                                        ("melpa"    . 10)))
 
-;;(setq warning-minimun-level :error)
+(setq warning-minimun-level :error)
