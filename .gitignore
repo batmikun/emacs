@@ -12,3 +12,6 @@ elisp-autofmt-cache
 sessions
 eshell/history
 eshell/lastdir
+cache/
+custom.el
+places

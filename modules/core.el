@@ -4,9 +4,9 @@
 (setq inhibit-startup-message t)
 
 ;; set font
- (set-face-attribute 'default nil :font "IosevkaTermSlab Nerd Font Mono" :height 110 :weight 'light)
- (set-face-attribute 'fixed-pitch nil :font "IosevkaTermSlab Nerd Font Mono" :height 110 :weight 'light)
- (set-face-attribute 'variable-pitch nil :font "IosevkaTermSlab Nerd Font Mono" :height 110 :weight 'light)
+ (set-face-attribute 'default nil :font "Roboto" :height 110 :weight 'light)
+ (set-face-attribute 'fixed-pitch nil :font "Roboto" :height 110 :weight 'light)
+ (set-face-attribute 'variable-pitch nil :font "Roboto" :height 110 :weight 'light)
 
 
 ;; Decrease garbage collection threshold after startup for better interactive performance
