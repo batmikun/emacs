@@ -51,6 +51,12 @@
  :ensure t
  :init (ef-themes-select 'ef-autumn))
 
+(use-package
+  nerd-icons
+  :ensure t
+  :custom
+  (nerd-icons-font-family "IosevkaTermSlab Nerd Font Mono"))
+
 ;; BETTER Help Buffer
 (use-package
  helpful
