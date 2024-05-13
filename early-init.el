@@ -19,5 +19,3 @@
       package-archive-priorities     '(("gnu-elpa" . 0)
                                        ("jcs-elpa" . 5)
                                        ("melpa"    . 10)))
-
-(setq warning-minimun-level :error)

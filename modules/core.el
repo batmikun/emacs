@@ -6,8 +6,7 @@
 ;; set font
  (set-face-attribute 'default nil :font "Roboto" :height 110 :weight 'light)
  (set-face-attribute 'fixed-pitch nil :font "Roboto" :height 110 :weight 'light)
- (set-face-attribute 'variable-pitch nil :font "Roboto" :height 110 :weight 'light)
-
+(set-face-attribute 'variable-pitch nil :font "Roboto" :height 110 :weight 'light)
 
 ;; Decrease garbage collection threshold after startup for better interactive performance
 (add-hook 'emacs-startup-hook
@@ -36,6 +35,14 @@
 
 ;; custom file
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
+
+(setq user-full-name "Nicolas Stirnemann")
+(setq inhibit-startup-message t
+      use-short-answers t)
+(add-to-list 'default-frame-alist '(fullscreen . maximized))
+(display-time) 
+(setq display-time-24hr-format t)
+(delete-selection-mode t)
 
 ;; disable ui
 (tool-bar-mode -1)
@@ -70,8 +77,7 @@
       transient-levels-file (concat user-cache-directory "transient-levels.el")
       bookmark-default-file (concat user-cache-directory "bookmarks")
       tramp-persistency-file-name (concat user-cache-directory "tramp")
-      package-user-dir (concat user-cache-directory "elpa")
-      straight-base-dir user-cache-directory)
+      package-user-dir (concat user-cache-directory "elpa"))
 
 (let ((backup-dir (concat user-cache-directory "backups/"))
       (autosave-dir (concat user-cache-directory "auto-saves/")))
@@ -112,5 +118,4 @@
 (global-set-key (kbd "C-w k")    'windmove-up)
 (global-set-key (kbd "C-w j")  'windmove-down)
 (global-set-key (kbd "C-w c")  'delete-window)
-
 (global-set-key (kbd "C-w d") 'kill-region)
